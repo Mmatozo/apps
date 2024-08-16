@@ -12,22 +12,29 @@ import { parseHeaders } from "../utils/parseHeaders.ts";
 
 // https://wakecommerce.readme.io/docs/storefront-api-checkoutcustomerassociate
 export default async function (_props: object, req: Request, ctx: AppContext) {
-  const headers = parseHeaders(req.headers);
-  const checkoutId = ensureCheckout(getCartCookie(req.headers));
-  const customerAccessToken = ensureCustomerToken(await authenticate(req, ctx));
+  try {
+    const headers = parseHeaders(req.headers);
+    const checkoutId = ensureCheckout(getCartCookie(req.headers));
+    const customerAccessToken = ensureCustomerToken(
+      await authenticate(req, ctx),
+    );
 
-  // associate account to checkout
-  await ctx.storefront.query<
-    CheckoutCustomerAssociateMutation,
-    CheckoutCustomerAssociateMutationVariables
-  >(
-    {
-      variables: {
-        customerAccessToken,
-        checkoutId,
+    // associate account to checkout
+    await ctx.storefront.query<
+      CheckoutCustomerAssociateMutation,
+      CheckoutCustomerAssociateMutationVariables
+    >(
+      {
+        variables: {
+          customerAccessToken,
+          checkoutId,
+        },
+        ...CheckoutCustomerAssociate,
       },
-      ...CheckoutCustomerAssociate,
-    },
-    { headers },
-  );
+      { headers },
+    );
+  } catch (err) {
+    console.error("Associate Checkout Error", err);
+    throw err;
+  }
 }
