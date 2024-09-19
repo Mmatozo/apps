@@ -1,15 +1,15 @@
-import type { App, FnContext } from "deco/mod.ts";
+import { Markdown } from "../decohub/components/Markdown.tsx";
 import { fetchSafe } from "../utils/fetch.ts";
 import { createGraphqlClient } from "../utils/graphql.ts";
 import { createHttpClient } from "../utils/http.ts";
+import { PreviewContainer } from "../utils/preview.tsx";
 import type { Secret } from "../website/loaders/secret.ts";
-import manifest, { type Manifest } from "./manifest.gen.ts";
-import type { OpenAPI } from "./utils/openapi/wake.openapi.gen.ts";
-import type { CheckoutApi } from "./utils/client.ts";
-import { previewFromMarkdown } from "../utils/preview.ts";
+import manifest, { Manifest } from "./manifest.gen.ts";
+import { CheckoutApi } from "./utils/client.ts";
+import { OpenAPI } from "./utils/openapi/wake.openapi.gen.ts";
+import { type App, type FnContext } from "@deco/deco";
 
 export type AppContext = FnContext<State, Manifest>;
-
 export let state: null | State = null;
 
 /** @title Wake */
@@ -81,10 +81,12 @@ export default function App(props: Props): App<Manifest, State> {
 
   // HEAD
   //
-  const stringToken = typeof token === "string" ? token : token?.get?.() ?? "";
+  const stringToken = typeof token === "string"
+    ? token
+    : (token?.get?.() ?? "");
   const stringStorefrontToken = typeof storefrontToken === "string"
     ? storefrontToken
-    : storefrontToken?.get?.() ?? "";
+    : (storefrontToken?.get?.() ?? "");
 
   const api = createHttpClient<OpenAPI>({
     base: "https://api.fbits.net",
@@ -112,6 +114,27 @@ export default function App(props: Props): App<Manifest, State> {
   };
 }
 
-export const preview = previewFromMarkdown(
-  new URL("./README.md", import.meta.url),
-);
+export const preview = async () => {
+  const markdownContent = await Markdown(
+    new URL("./README.md", import.meta.url).href,
+  );
+  return {
+    Component: PreviewContainer,
+    props: {
+      name: "Wake",
+      owner: "deco.cx",
+      description:
+        "Loaders, actions and workflows for adding Wake Commerce Platform to your website.",
+      logo: "https://raw.githubusercontent.com/deco-cx/apps/main/wake/logo.png",
+      images: [
+        "https://deco-sites-assets.s3.sa-east-1.amazonaws.com/starting/6ffea061-09f2-4063-a1f0-8ad2a37a148d/Screenshot-2024-09-05-at-12.57.10.png",
+      ],
+      tabs: [
+        {
+          title: "About",
+          content: markdownContent(),
+        },
+      ],
+    },
+  };
+};

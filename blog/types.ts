@@ -1,4 +1,5 @@
 import { ImageWidget } from "../admin/widgets.ts";
+import { PageInfo } from "../commerce/types.ts";
 
 /**
  * @titleBy name
@@ -21,6 +22,10 @@ export interface BlogPost {
   title: string;
   excerpt: string;
   image?: ImageWidget;
+  /**
+   * @title Alt text for the image
+   */
+  alt?: string;
   /**
    * @widget blog
    * @collection authors
@@ -45,7 +50,21 @@ export interface BlogPost {
    * @title SEO
    */
   seo?: Seo;
+  /**
+   * @title ReadTime in minutes
+   */
+  readTime?: number;
+  /**
+   * @title Extra Props
+   */
+  extraProps?: ExtraProps[];
 }
+
+export interface ExtraProps {
+  key: string;
+  value: string;
+}
+
 export interface Seo {
   title?: string;
   description?: string;
@@ -58,4 +77,16 @@ export interface BlogPostPage {
   "@type": "BlogPostPage";
   post: BlogPost;
   seo?: Seo | null;
+}
+
+export type SortBy =
+  | "date_desc"
+  | "date_asc"
+  | "title_asc"
+  | "title_desc";
+
+export interface BlogPostListingPage {
+  posts: BlogPost[];
+  pageInfo: PageInfo;
+  seo: Seo;
 }

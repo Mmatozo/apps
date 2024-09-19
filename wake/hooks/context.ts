@@ -65,7 +65,11 @@ const enqueue = (
 };
 
 const enqueue2 = (
-  cb: (signal: AbortSignal) => Promise<Partial<Context>> | Partial<Context>,
+  cb: (
+    signal: AbortSignal,
+  ) =>
+    | Promise<{ shop: ShopQuery["shop"] }>
+    | Partial<{ shop: ShopQuery["shop"] }>,
 ) => {
   abort2();
 

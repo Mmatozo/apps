@@ -16,6 +16,18 @@ fragment Checkout on Checkout {
 		brand
 		ajustedPrice
 		listPrice
+    totalListPrice
+    totalAdjustedPrice
+    productAttributes {
+        name
+        type
+        value
+      }
+    adjustments {
+        observation
+        type
+        value
+      }
 		price
 		name
 		productId
@@ -23,6 +35,27 @@ fragment Checkout on Checkout {
 		quantity
 		sku
 		url
+    category
+    kit
+    gift
+    subscription {
+        availableSubscriptions {
+          name
+          recurringDays
+          recurringTypeId
+          selected
+          subscriptionGroupDiscount
+          subscriptionGroupId
+        }
+        selected {
+          selected
+          name
+          recurringDays
+          recurringTypeId
+          subscriptionGroupDiscount
+          subscriptionGroupId
+        }
+      }
 		customization {
 			availableCustomizations {
 				cost
@@ -42,6 +75,60 @@ fragment Checkout on Checkout {
 				value
 			}
 		}
+    attributeSelections {
+        selectedVariant {
+          id
+          alias
+          available
+          images {
+            fileName
+            url
+          }
+          prices {
+            listPrice
+            price
+            discountPercentage
+            installmentPlans {
+              displayName
+              name
+              installments {
+                discount
+                fees
+                number
+                value
+              }
+            }
+            bestInstallment {
+              name
+              displayName
+              discount
+              fees
+              number
+              value
+            }
+            wholesalePrices {
+              price
+              quantity
+            }
+          }
+          productId
+          productVariantId
+          stock
+        }
+        selections {
+          attributeId
+          displayType
+          name
+          varyByParent
+          values {
+            alias
+            available
+            printUrl
+            selected
+            value
+          }
+        }
+      }
 	}
 	selectedAddress {
     addressNumber
@@ -161,6 +248,30 @@ fragment Checkout on Checkout {
 		shippingValue
 		totalValue
 	}
+  kits {
+      kitId
+      kitGroupId
+      alias
+      imageUrl
+      listPrice
+      price
+      totalListPrice
+      totalAdjustedPrice
+      name
+      quantity
+      products {
+        productId
+        productVariantId
+        imageUrl
+        name
+        url
+        quantity
+        productAttributes {
+          name
+          value
+        }
+      }
+    }
 }
 `;
 
@@ -175,6 +286,7 @@ fragment Product on Product {
     name
   }
   productCategories {
+    id
     name
     url
     hierarchy
@@ -359,13 +471,15 @@ fragment ProductVariant on ProductVariant {
         }
 }`;
 
-const SingleProductPart = gql`
-fragment SingleProductPart on SingleProduct {
-  mainVariant
+const BuyList = gql`
+fragment BuyList on BuyList {
+ 
+      mainVariant
   productName
   productId
   alias
   collection
+  kit
   attributes {
     name
     type
@@ -376,6 +490,7 @@ fragment SingleProductPart on SingleProduct {
   }
   numberOfVotes
   productCategories {
+    id
     name
     url
     hierarchy
@@ -474,6 +589,227 @@ fragment SingleProductPart on SingleProduct {
     name
   }
   attributeSelections {
+    selections {
+      attributeId
+      displayType
+      name
+      varyByParent
+      values {
+        alias
+        available
+        value
+        selected
+        printUrl
+      }
+    }
+    canBeMatrix
+    matrix {
+        column {
+          displayType
+          name
+          values {
+            value
+          }
+        }
+        data {
+          available
+          productVariantId
+          stock
+        }
+        row {
+          displayType
+          name
+          values {
+            value
+            printUrl
+          }
+        }
+      }
+  },
+  buyTogether {
+    productId
+  } 
+  promotions {
+    content
+    disclosureType
+    id
+    fullStampUrl
+    stamp
+    title
+  }
+      alias
+    buyListId
+    kit
+    available
+    variantName
+    buyListProducts {
+      productId
+      quantity
+      includeSameParent
+    }
+    images{
+      url
+      fileName
+      print
+    }
+    informations{
+      id
+      title
+      type
+      value
+    }
+    promotions{
+      content
+      id
+      stamp
+      fullStampUrl
+      title
+      disclosureType
+    }
+    productName
+    prices {
+      listPrice
+      price
+      discountPercentage
+      installmentPlans{
+          displayName
+          name
+          installments{
+            discount
+            fees
+            number
+            value
+          }
+      }
+      bestInstallment {
+        name
+        displayName
+        discount
+        fees
+        number
+        value
+      }
+    }
+    
+}
+`;
+
+const SingleProductPart = gql`
+fragment SingleProductPart on SingleProduct {
+  mainVariant
+  productName
+  productId
+  alias
+  collection
+  attributes {
+    name
+    type
+    value
+    attributeId
+    displayType
+    id
+  }
+  numberOfVotes
+  productCategories {
+    id
+    name
+    url
+    hierarchy
+    main
+    googleCategories
+  }
+  informations {
+    title
+    value
+    type
+  }
+  available
+  averageRating
+  breadcrumbs {
+    text
+    link
+  }
+  condition
+  createdAt
+  ean
+  id
+  images {
+    url
+    fileName
+    print
+  }
+  minimumOrderQuantity
+  prices {
+    bestInstallment {
+      discount
+      displayName
+      fees
+      name
+      number
+      value
+    }
+    discountPercentage
+    discounted
+    installmentPlans {
+      displayName
+      installments {
+        discount
+        fees
+        number
+        value
+      }
+      name
+    }
+    listPrice
+    multiplicationFactor
+    price
+    priceTables {
+      discountPercentage
+      id
+      listPrice
+      price
+    }
+    wholesalePrices {
+      price
+      quantity
+    }
+  }
+  productBrand {
+    fullUrlLogo
+    logoUrl
+    name
+    alias
+  }
+  productVariantId
+  seller {
+    name
+  }
+  seo {
+    name
+    scheme
+    type
+    httpEquiv
+    content
+  }
+  sku
+  stock
+  variantName
+  parallelOptions
+  urlVideo
+  reviews {
+    rating
+    review
+    reviewDate
+    email
+    customer
+  }
+  similarProducts {
+    alias
+    image
+    imageUrl
+    name
+  }
+  attributeSelections(includeParentIdVariants: $includeParentIdVariants) {
     selections {
       attributeId
       displayType
@@ -695,10 +1031,10 @@ export const WishlistReducedProduct = gql`
 
 export const GetProduct = {
   fragments: [SingleProductPart, SingleProduct, ProductVariant],
-  query: gql`query GetProduct($productId: Long!) { 
+  query:
+    gql`query GetProduct($productId: Long!, $includeParentIdVariants: Boolean) { 
     product(productId: $productId) { 
       ...SingleProduct 
-     
     } 
   }`,
 };
@@ -1385,4 +1721,12 @@ export const CustomerPasswordRecovery = {
     }
   }
   `,
+};
+export const GetBuyList = {
+  fragments: [BuyList],
+  query: gql`query BuyList($id: Long!) {
+     buyList(id: $id){
+      ...BuyList
+     }
+  }`,
 };

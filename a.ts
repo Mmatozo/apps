@@ -21,5 +21,5 @@ const config: CodegenConfig = {
   },
 };
 
-await import("deco/scripts/apps/bundle.ts");
+await import("jsr:@deco/deco/scripts/bundle");
 await generate({ ...config }, true);
